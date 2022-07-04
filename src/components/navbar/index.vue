@@ -125,8 +125,8 @@
           >
             <img alt="avatar" :src="avatar" />
           </a-avatar>
-          <!-- <template #content>
-            <a-doption>
+          <template #content>
+            <!-- <a-doption>
               <a-space @click="switchRoles">
                 <icon-tag />
                 <span>
@@ -149,7 +149,7 @@
                   {{ $t('messageBox.userSettings') }}
                 </span>
               </a-space>
-            </a-doption>
+            </a-doption> -->
             <a-doption>
               <a-space @click="handleLogout">
                 <icon-export />
@@ -158,7 +158,7 @@
                 </span>
               </a-space>
             </a-doption>
-          </template> -->
+          </template>
         </a-dropdown>
       </li>
     </ul>

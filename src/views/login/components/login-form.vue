@@ -12,7 +12,7 @@
         @submit="handleSubmit"
       >
         <a-form-item
-          field="username"
+          field="userName"
           :rules="[
             { required: true, message: $t('login.form.userName.errMsg') },
           ]"
@@ -20,7 +20,7 @@
           hide-label
         >
           <a-input
-            v-model="userInfo.username"
+            v-model="userInfo.userName"
             :placeholder="$t('login.form.userName.placeholder')"
           >
             <template #prefix>
@@ -84,13 +84,13 @@
         @submit="handleRegisterSubmit"
       >
         <a-form-item
-          field="username"
+          field="userName"
           :rules="[{ required: true, message: '用户名不能为空' }]"
           :validate-trigger="['change', 'blur']"
           hide-label
         >
           <a-input
-            v-model="registerUserInfo.username"
+            v-model="registerUserInfo.userName"
             :placeholder="$t('login.form.userName.placeholder')"
           >
             <template #prefix>
@@ -186,16 +186,16 @@
 
   const loginConfig = useStorage('login-config', {
     rememberPassword: true,
-    username: 'admin', // 演示默认值
+    userName: 'admin', // 演示默认值
     password: 'admin', // demo default value
   });
   const userInfo = reactive({
-    username: loginConfig.value.username,
+    userName: loginConfig.value.userName,
     password: loginConfig.value.password,
   });
 
   const registerUserInfo = reactive({
-    username: '',
+    userName: '',
     password: '',
     phone: '',
     shopName: '',
@@ -217,21 +217,22 @@
       try {
         const user = {} as RegisterData;
         Object.assign(user, values);
+        user.userName = values.userName;
         encrypt(user);
         await userStore.login(user);
         const { redirect, ...othersQuery } = router.currentRoute.value.query;
         router.push({
-          name: (redirect as string) || 'GoodsList',
+          name: (redirect as string) || 'Workplace',
           query: {
             ...othersQuery,
           },
         });
         Message.success(t('login.form.login.success'));
         const { rememberPassword } = loginConfig.value;
-        const { username, password } = values;
+        const { userName, password } = values;
         // 实际生产环境需要进行加密存储。
         // The actual production environment requires encrypted storage.
-        loginConfig.value.username = rememberPassword ? username : '';
+        loginConfig.value.userName = rememberPassword ? userName : '';
         loginConfig.value.password = rememberPassword ? password : '';
       } catch (err) {
         errorMessage.value = (err as any)?.response?.data?.errmsg;

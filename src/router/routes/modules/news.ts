@@ -1,32 +1,32 @@
 import { DEFAULT_LAYOUT } from '@/router/constans';
 
 export default {
-  path: '/goods',
-  name: 'goods',
+  path: '/news',
+  name: 'News',
   component: DEFAULT_LAYOUT,
   meta: {
-    locale: 'menu.goods',
+    locale: 'menu.news',
     requiresAuth: true,
     icon: 'icon-list',
     order: 2,
   },
   children: [
     {
-      path: 'goods-list', // The midline path complies with SEO specifications
-      name: 'GoodsList',
-      component: () => import('@/views/goods/goods-list/index.vue'),
+      path: 'news-list', // The midline path complies with SEO specifications
+      name: 'NewsList',
+      component: () => import('@/views/news/news-list/index.vue'),
       meta: {
-        locale: 'menu.goods.list',
+        locale: 'menu.news.list',
         requiresAuth: true,
         roles: ['*'],
       },
     },
     {
-      path: 'onshelf',
-      name: 'GoodsOnshelf',
-      component: () => import('@/views/goods/onshelf/index.vue'),
+      path: 'add',
+      name: 'AddNews',
+      component: () => import('@/views/news/add/index.vue'),
       meta: {
-        locale: 'menu.goods.onshelf',
+        locale: 'menu.news.add',
         requiresAuth: true,
         roles: ['*'],
       },
@@ -34,9 +34,9 @@ export default {
     {
       path: 'change',
       name: 'GoodsChange',
-      component: () => import('@/views/goods/change/index.vue'),
+      component: () => import('@/views/news/change/index.vue'),
       meta: {
-        locale: 'menu.goods.change',
+        locale: 'menu.news.change',
         requiresAuth: true,
         roles: ['*'],
         hideInMenu: true,

@@ -5,10 +5,10 @@
     :header-style="{ paddingBottom: '12px' }"
   >
     <a-grid :cols="24" :col-gap="12" :row-gap="12">
-      <a-grid-item :span="{ xs: 12, sm: 12, md: 12, lg: 12, xl: 6, xxl: 6 }">
+      <a-grid-item :span="{ xs: 24, sm: 24, md: 24, lg: 12, xl: 6, xxl: 6 }">
         <ChainItem
-          :title="$t('dataAnalysis.card.title.allVisitors')"
-          quota="visitors"
+          title="浏览总次数"
+          quota="浏览"
           chart-type="line"
           :card-style="{
             background: isDark
@@ -17,10 +17,10 @@
           }"
         />
       </a-grid-item>
-      <a-grid-item :span="{ xs: 12, sm: 12, md: 12, lg: 12, xl: 6, xxl: 6 }">
+      <a-grid-item :span="{ xs: 24, sm: 24, md: 24, lg: 12, xl: 6, xxl: 6 }">
         <ChainItem
-          :title="$t('dataAnalysis.card.title.contentPublished')"
-          quota="published"
+          title="喜欢总次数"
+          quota="喜欢"
           chart-type="bar"
           :card-style="{
             background: isDark
@@ -29,10 +29,10 @@
           }"
         />
       </a-grid-item>
-      <a-grid-item :span="{ xs: 12, sm: 12, md: 12, lg: 12, xl: 6, xxl: 6 }">
+      <a-grid-item :span="{ xs: 24, sm: 24, md: 24, lg: 12, xl: 6, xxl: 6 }">
         <ChainItem
-          :title="$t('dataAnalysis.card.title.totalComment')"
-          quota="comment"
+          title="收藏总次数"
+          quota="收藏"
           chart-type="line"
           :card-style="{
             background: isDark
@@ -41,7 +41,7 @@
           }"
         />
       </a-grid-item>
-      <a-grid-item :span="{ xs: 12, sm: 12, md: 12, lg: 12, xl: 6, xxl: 6 }">
+      <a-grid-item :span="{ xs: 24, sm: 24, md: 24, lg: 12, xl: 6, xxl: 6 }">
         <ChainItem
           :title="$t('dataAnalysis.card.title.totalShare')"
           quota="share"

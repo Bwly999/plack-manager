@@ -16,10 +16,20 @@
   import { moneyFormatter } from '@/utils/filter';
   import { listCategory } from '@/api/category';
   import { useUserStore } from '@/store';
+  import {
+    type News,
+    type NewsParam,
+    listNewsPage,
+    listNewsCategory,
+  } from '@/api/news';
 
   const dataTableRef = ref(ElTable);
   const router = useRouter();
 
+  interface CategoryOption {
+    label: string;
+    value: string;
+  }
   const state = reactive({
     // 遮罩层
     loading: true,
@@ -33,9 +43,9 @@
     queryParams: {
       page: 1,
       pageSize: 10,
-    } as GoodsParams,
-    goodsList: [] as GoodsRecord[],
-    categoryOptions: [],
+    } as NewsParam,
+    newsList: [] as News[],
+    categoryOptions: [] as CategoryOption[],
     goodDetail: undefined,
     dialogVisible: false,
   });
@@ -44,7 +54,7 @@
     loading,
     multiple,
     queryParams,
-    goodsList,
+    newsList,
     categoryOptions,
     goodDetail,
     total,
@@ -55,10 +65,10 @@
 
   function handleQuery() {
     state.loading = true;
-    listGoodsPages(userStore.shop?.id || '', state.queryParams)
+    listNewsPage(state.queryParams)
       .then(({ data }) => {
-        state.goodsList = data.content;
-        state.total = data.totalElements;
+        state.newsList = data.records;
+        state.total = data.total;
         state.loading = false;
       })
       .finally(() => {
@@ -70,8 +80,6 @@
     state.queryParams = {
       page: 1,
       pageSize: 10,
-      name: undefined,
-      category: undefined,
     };
     handleQuery();
   }
@@ -82,7 +90,7 @@
   }
 
   function handleAdd() {
-    router.push({ path: 'onshelf' });
+    router.push({ path: 'add' });
   }
 
   function handleUpdate(row: any) {
@@ -119,11 +127,11 @@
   }
 
   onMounted(() => {
-    listCategory().then((response: any) => {
-      categoryOptions.value = response.data?.map((item: any) => {
+    listNewsCategory().then((response) => {
+      categoryOptions.value = response.data.map((item) => {
         return {
-          label: item,
-          value: item,
+          label: item.name,
+          value: item.id,
         };
       });
     });
@@ -134,26 +142,26 @@
 <!-- setup 无法设置组件名称，组件名称keepAlive必须 -->
 <script lang="ts">
   export default {
-    name: 'Goods',
+    name: 'NewsList',
   };
 </script>
 
 <template>
   <div class="container">
-    <Breadcrumb :items="['menu.goods', 'menu.goods.list']" />
+    <Breadcrumb :items="['menu.news', 'menu.news.list']" />
     <div class="bg-white rounded-2xl p4">
       <el-form ref="queryForm" class="mt-4" :inline="true">
         <el-form-item>
           <el-input
-            v-model="queryParams.name"
-            placeholder="商品名称"
+            v-model="queryParams.title"
+            placeholder="新闻标题"
             clearable
           ></el-input>
         </el-form-item>
         <el-form-item>
           <el-cascader
-            v-model="queryParams.category"
-            placeholder="商品分类"
+            v-model="queryParams.type"
+            placeholder="新闻类别"
             :props="{ emitPath: false }"
             :options="categoryOptions"
             clearable
@@ -168,7 +176,7 @@
         </el-form-item>
         <el-form-item class="">
           <el-button type="success" :icon="Position" @click="handleAdd"
-            >发布商品</el-button
+            >新闻发布</el-button
           >
           <el-button
             type="danger"
@@ -183,100 +191,33 @@
       <el-table
         ref="dataTableRef"
         v-loading="loading"
-        :data="goodsList"
+        :data="newsList"
         border
         @selection-change="handleSelectionChange"
         @row-click="handleRowClick"
       >
         <el-table-column type="selection" min-width="5%" center />
-        <el-table-column type="expand" width="40" label="">
-          <template #default="props">
-            <!-- <el-table :data="props.row.skuList" border>
-              <el-table-column align="center" label="商品编码" prop="skuSn" />
-              <el-table-column align="center" label="商品规格" prop="name" />
-              <el-table-column label="图片" prop="coverImgUrl">
-                <template #default="scope">
-                  <img :src="scope.row.coverImgUrl" width="40" />
-                </template>
-              </el-table-column>
-              <el-table-column align="center" label="现价" prop="price">
-                <template #default="scope">{{
-                  moneyFormatter(scope.row.price)
-                }}</template>
-              </el-table-column>
-              <el-table-column align="center" label="库存" prop="stockNum" />
-            </el-table> -->
-
-            <!-- <el-card> -->
-            <div text-left font-bold>
-              <p>
-                商品编号: <a font-normal> {{ props.row.id }} </a>
-              </p>
-              <p>
-                商品名: <a font-normal>{{ props.row.name }}</a>
-              </p>
-              <div>
-                <p>封面:</p>
-                <img :src="props.row.coverImgUrl" inline width="160" />
-              </div>
-              <div label="详情图片" prop="coverImgUrl">
-                <p>详情图片:</p>
-                <div>
-                  <img
-                    v-for="(imgUrl, i) in props.row.scollImages"
-                    :key="i"
-                    :src="imgUrl"
-                    width="160"
-                  />
-                </div>
-              </div>
-              <p>
-                现价: <a font-normal>{{ moneyFormatter(props.row.price) }}</a>
-              </p>
-              <p>
-                库存: <a font-normal>{{ props.row.stock }}</a>
-              </p>
-            </div>
-            <!-- </el-card> -->
-          </template>
-        </el-table-column>
-        <el-table-column label="商品名称" prop="name" min-width="140" />
-        <el-table-column label="商品图片">
+        <el-table-column label="新闻标题" prop="newsTitle" min-width="140" />
+        <el-table-column label="新闻类别" prop="newsType" min-width="100">
           <template #default="scope">
-            <el-popover placement="right" :width="400" trigger="hover">
-              <img :src="scope.row.coverImgUrl" width="400" height="400" />
-              <template #reference>
-                <img
-                  :src="scope.row.coverImgUrl"
-                  style="max-height: 60px; max-width: 60px"
-                />
-              </template>
-            </el-popover>
+            {{ scope.row.newsType }}
           </template>
         </el-table-column>
-        <el-table-column label="商品类目" prop="category" min-width="100" />
-        <el-table-column align="center" label="价格" prop="price">
-          <template #default="scope">{{
-            moneyFormatter(scope.row.price)
-          }}</template>
-        </el-table-column>
-        <el-table-column align="center" label="折扣价" prop="discountPrice">
-          <template #default="scope">{{
-            moneyFormatter(scope.row.discountPrice)
-          }}</template>
+        <el-table-column align="center" label="作者" prop="author">
+          <template #default="scope">
+            {{ scope.row.author }}
+          </template>
         </el-table-column>
 
-        <el-table-column label="销量" prop="monthSale" min-width="100" />
-        <el-table-column label="重量" prop="weight" min-width="100" />
-        <el-table-column label="库存" prop="stock" min-width="100" />
-        <el-table-column label="详情" prop="detail">
+        <el-table-column label="创建时间" prop="monthSale" min-width="100" />
+        <el-table-column label="详情" prop="cotent">
           <template #default="scope">
             <el-button
               type="primary"
               :icon="View"
               circle
               plain
-              @click.stop="handleGoodsView(scope.row.desc)"
+              @click.stop="handleGoodsView(scope.row.content)"
             />
           </template>
         </el-table-column>
@@ -312,7 +253,7 @@
         v-model="dialogVisible"
         width="70%"
         height="70%"
-        title="商品详情"
+        title="新闻内容"
       >
         <div class="goods-detail-box" v-html="goodDetail" />
         <!-- <div class="goods-detail-box">

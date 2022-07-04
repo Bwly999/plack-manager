@@ -14,9 +14,16 @@
             <a-typography-text type="secondary" class="label">
               {{ $t('dataAnalysis.card.yesterday') }}
             </a-typography-text>
-            <a-typography-text type="danger">
+            <a-typography-text
+              :type="renderData.growth >= 0 ? 'success' : 'danger'"
+            >
               {{ renderData.growth }}
-              <icon-arrow-rise />
+
+              <icon-arrow-rise
+                v-if="renderData.growth >= 0"
+                class="text-green"
+              />
+              <icon-arrow-down v-else />
             </a-typography-text>
           </div>
         </div>
@@ -37,8 +44,10 @@
     PublicOpinionAnalysisRes,
   } from '@/api/visualization';
   import useChartOption from '@/hooks/chart-option';
+  import { getUserSummary, UserSummaryParam } from '@/api/statistics';
 
   const barChartOptionsFactory = () => {
+    const xData = ref<any[]>([]);
     const data = ref<any>([]);
     const { chartOption } = useChartOption(() => {
       return {
@@ -50,6 +59,7 @@
         },
         xAxis: {
           type: 'category',
+          data: xData,
           show: false,
         },
         yAxis: {
@@ -71,13 +81,15 @@
       };
     });
     return {
+      xData,
       data,
       chartOption,
     };
   };
 
   const lineChartOptionsFactory = () => {
-    const data = ref<number[][]>([[], []]);
+    const data = ref<number[][]>([[]]);
+    const xData = ref<any[]>([]);
     const { chartOption } = useChartOption(() => {
       return {
         grid: {
@@ -88,6 +100,7 @@
         },
         xAxis: {
           type: 'category',
+          data: xData,
           show: false,
         },
         yAxis: {
@@ -99,7 +112,6 @@
         },
         series: [
           {
-            name: '2001',
             data: data.value[0],
             type: 'line',
             showSymbol: false,
@@ -109,22 +121,11 @@
               width: 3,
             },
           },
-          {
-            name: '2002',
-            data: data.value[1],
-            type: 'line',
-            showSymbol: false,
-            smooth: true,
-            lineStyle: {
-              color: '#6AA1FF',
-              width: 3,
-              type: 'dashed',
-            },
-          },
         ],
       };
     });
     return {
+      xData,
       data,
       chartOption,
     };
@@ -196,19 +197,28 @@
   });
 
   const { loading, setLoading } = useLoading(true);
-  const { chartOption: lineChartOption, data: lineData } =
-    lineChartOptionsFactory();
-  const { chartOption: barChartOption, data: barData } =
-    barChartOptionsFactory();
-  const { chartOption: pieChartOption, data: pieData } =
-    pieChartOptionsFactory();
-  const renderData = ref<PublicOpinionAnalysisRes>({
+  const {
+    chartOption: lineChartOption,
+    data: lineData,
+    xData: lineXData,
+  } = lineChartOptionsFactory();
+  const {
+    chartOption: barChartOption,
+    data: barData,
+    xData: barXData,
+  } = barChartOptionsFactory();
+  const {
+    chartOption: pieChartOption,
+    data: pieData,
+    // xData: pieXData,
+  } = pieChartOptionsFactory();
+  const renderData = ref<any>({
     count: 0,
     growth: 0,
     chartData: [],
   });
   const chartOption = ref({});
-  const fetchData = async (params: PublicOpinionAnalysis) => {
+  const fetchData1 = async (params: PublicOpinionAnalysis) => {
     try {
       const { data } = await queryPublicOpinionAnalysis(params);
       renderData.value = data;
@@ -244,7 +254,55 @@
       setLoading(false);
     }
   };
-  fetchData({ quota: props.quota });
+
+  const fetchData = async (params: UserSummaryParam) => {
+    try {
+      const { data } = await getUserSummary(params);
+      const count = data
+        .map((x) => x.count)
+        .reduce((prev, cur) => prev + cur, 0);
+      let growth = 0;
+      if (data.length >= 2) {
+        growth = data[data.length - 1].count - data[data.length - 2].count;
+      } else if (data.length === 1) {
+        growth = data[0].count;
+      }
+      renderData.value = {
+        count,
+        growth,
+      };
+      if (props.chartType === 'bar') {
+        data.forEach((el, idx) => {
+          barXData.value.push(el.date);
+          barData.value.push({
+            value: el.count,
+            itemStyle: {
+              color: idx % 2 ? '#2CAB40' : '#86DF6C',
+            },
+          });
+        });
+        chartOption.value = barChartOption.value;
+      } else if (props.chartType === 'line') {
+        data.forEach((el, idx) => {
+          // if (lineData.value)
+          lineXData.value.push(el.date);
+          // lineData.value[idx].push(el.count);
+          lineData.value[0].push(el.count);
+        });
+        chartOption.value = lineChartOption.value;
+      } else {
+        // chartData.forEach((el) => {
+        //   pieData.value.push(el);
+        // });
+        // chartOption.value = pieChartOption.value;
+      }
+    } catch (err) {
+      // you can report use errorHandler or other
+    } finally {
+      setLoading(false);
+    }
+  };
+  fetchData({ n: 7, type: props.quota });
 </script>
 
 <style scoped lang="less">
