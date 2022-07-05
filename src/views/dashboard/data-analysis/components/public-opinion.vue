@@ -1,11 +1,11 @@
 <template>
   <a-card
     class="general-card"
-    :title="$t('dataAnalysis.title.publicOpinion')"
+    title="用户行为分析(过去7天)"
     :header-style="{ paddingBottom: '12px' }"
   >
     <a-grid :cols="24" :col-gap="12" :row-gap="12">
-      <a-grid-item :span="{ xs: 24, sm: 24, md: 24, lg: 12, xl: 6, xxl: 6 }">
+      <a-grid-item :span="{ xs: 24, sm: 24, md: 24, lg: 12, xl: 8, xxl: 8 }">
         <ChainItem
           title="浏览总次数"
           quota="浏览"
@@ -17,7 +17,7 @@
           }"
         />
       </a-grid-item>
-      <a-grid-item :span="{ xs: 24, sm: 24, md: 24, lg: 12, xl: 6, xxl: 6 }">
+      <a-grid-item :span="{ xs: 24, sm: 24, md: 24, lg: 12, xl: 8, xxl: 8 }">
         <ChainItem
           title="喜欢总次数"
           quota="喜欢"
@@ -29,7 +29,7 @@
           }"
         />
       </a-grid-item>
-      <a-grid-item :span="{ xs: 24, sm: 24, md: 24, lg: 12, xl: 6, xxl: 6 }">
+      <a-grid-item :span="{ xs: 24, sm: 24, md: 24, lg: 12, xl: 8, xxl: 8 }">
         <ChainItem
           title="收藏总次数"
           quota="收藏"
@@ -43,8 +43,8 @@
       </a-grid-item>
       <a-grid-item :span="{ xs: 24, sm: 24, md: 24, lg: 12, xl: 6, xxl: 6 }">
         <ChainItem
-          :title="$t('dataAnalysis.card.title.totalShare')"
-          quota="share"
+          title="浏览比例图"
+          quota="浏览比例"
           chart-type="pie"
           :card-style="{
             background: isDark
@@ -60,6 +60,7 @@
 <script lang="ts" setup>
   import useThemes from '@/hooks/themes';
   import ChainItem from './chain-item.vue';
+  import UserActions from './user-actions.vue';
 
   const { isDark } = useThemes();
 </script>

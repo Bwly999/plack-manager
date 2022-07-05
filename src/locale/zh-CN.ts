@@ -3,8 +3,6 @@ import localeLogin from '@/views/login/locale/zh-CN';
 
 import localeWorkplace from '@/views/dashboard/workplace/locale/zh-CN';
 
-import localeMonitor from '@/views/dashboard/monitor/locale/zh-CN';
-
 import localeSearchTable from '@/views/list/search-table/locale/zh-CN';
 import localeCardList from '@/views/list/card/locale/zh-CN';
 
@@ -13,7 +11,7 @@ import localeGroupForm from '@/views/form/group/locale/zh-CN';
 
 import localeBasicProfile from '@/views/profile/basic/locale/zh-CN';
 
-import localeDataAnalysis from '@/views/visualization/data-analysis/locale/zh-CN';
+import localeDataAnalysis from '@/views/dashboard/data-analysis/locale/zh-CN';
 import localeMultiDAnalysis from '@/views/visualization/multi-dimension-data-analysis/locale/zh-CN';
 
 import localeSuccess from '@/views/result/success/locale/zh-CN';
@@ -53,7 +51,6 @@ export default {
   ...localeLogin,
   ...localeWorkplace,
 
-  ...localeMonitor,
   ...localeSearchTable,
   ...localeCardList,
   ...localeStepForm,

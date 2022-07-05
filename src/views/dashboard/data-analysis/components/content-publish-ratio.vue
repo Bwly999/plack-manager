@@ -2,7 +2,7 @@
   <a-spin :loading="loading" style="width: 100%">
     <a-card class="general-card" :header-style="{ paddingBottom: '14px' }">
       <template #title>
-        {{ $t('dataAnalysis.contentPublishRatio') }}
+        {{ '7天内的用户行为比例' }}
       </template>
       <template #extra>
         <a-link>{{ $t('workplace.viewMore') }}</a-link>
@@ -21,6 +21,7 @@
     ContentPublishRecord,
   } from '@/api/visualization';
   import useChartOption from '@/hooks/chart-option';
+  import { getUserSummaryAll } from '@/api/statistics';
 
   const tooltipItemsHtmlString = (items: ToolTipFormatterParams[]) => {
     return items
@@ -44,9 +45,9 @@
 
   const { loading, setLoading } = useLoading(true);
   const xAxis = ref<string[]>([]);
-  const textChartsData = ref<number[]>([]);
-  const imgChartsData = ref<number[]>([]);
-  const videoChartsData = ref<number[]>([]);
+  const browseChartsData = ref<number[]>([]);
+  const favorChartsData = ref<number[]>([]);
+  const collectChartsData = ref<number[]>([]);
   const { chartOption } = useChartOption((isDark) => {
     return {
       grid: {
@@ -85,10 +86,10 @@
         type: 'value',
         axisLabel: {
           color: '#86909C',
-          formatter(value: number, idx: number) {
-            if (idx === 0) return `${value}`;
-            return `${value / 1000}k`;
-          },
+          // formatter(value: number, idx: number) {
+          //   if (idx === 0) return `${value}`;
+          //   return `${value / 1000}k`;
+          // },
         },
         splitLine: {
           lineStyle: {
@@ -110,23 +111,23 @@
       },
       series: [
         {
-          name: '纯文本',
-          data: textChartsData.value,
+          name: '浏览数',
+          data: browseChartsData.value,
           stack: 'one',
           type: 'bar',
           barWidth: 16,
           color: isDark ? '#4A7FF7' : '#246EFF',
         },
         {
-          name: '图文类',
-          data: imgChartsData.value,
+          name: '喜欢数',
+          data: favorChartsData.value,
           stack: 'one',
           type: 'bar',
           color: isDark ? '#085FEF' : '#00B2FF',
         },
         {
-          name: '视频类',
-          data: videoChartsData.value,
+          name: '收藏数',
+          data: collectChartsData.value,
           stack: 'one',
           type: 'bar',
           color: isDark ? '#01349F' : '#81E2FF',
@@ -140,15 +141,17 @@
   const fetchData = async () => {
     setLoading(true);
     try {
-      const { data: chartData } = await queryContentPublish();
-      xAxis.value = chartData[0].x;
-      chartData.forEach((el: ContentPublishRecord) => {
-        if (el.name === '纯文本') {
-          textChartsData.value = el.y;
-        } else if (el.name === '图文类') {
-          imgChartsData.value = el.y;
+      const { data: chartData } = await getUserSummaryAll({ n: 7 });
+      // console.log(chartData);
+      xAxis.value = chartData[0].date;
+      chartData.forEach((el: any) => {
+        if (el.name === '浏览') {
+          browseChartsData.value = el.count;
+        } else if (el.name === '喜欢') {
+          favorChartsData.value = el.count;
+        } else if (el.name === '收藏') {
+          collectChartsData.value = el.count;
         }
-        videoChartsData.value = el.y;
       });
     } catch (err) {
       // you can report use errorHandler or other
@@ -156,6 +159,25 @@
       setLoading(false);
     }
   };
+  // const fetchData = async () => {
+  //   setLoading(true);
+  //   try {
+  //     const { data: chartData } = await queryContentPublish();
+  //     xAxis.value = chartData[0].x;
+  //     chartData.forEach((el: ContentPublishRecord) => {
+  //       if (el.name === '纯文本') {
+  //         textChartsData.value = el.y;
+  //       } else if (el.name === '图文类') {
+  //         imgChartsData.value = el.y;
+  //       }
+  //       videoChartsData.value = el.y;
+  //     });
+  //   } catch (err) {
+  //     // you can report use errorHandler or other
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
   fetchData();
 </script>
 

@@ -21,13 +21,12 @@ export default {
         roles: ['*'],
       },
     },
-
     {
-      path: 'monitor',
-      name: 'Monitor',
-      component: () => import('@/views/dashboard/monitor/index.vue'),
+      path: 'data-analysis',
+      name: 'DataAnalysis',
+      component: () => import('@/views/dashboard/data-analysis/index.vue'),
       meta: {
-        locale: 'menu.dashboard.monitor',
+        locale: 'menu.visualization.dataAnalysis',
         requiresAuth: true,
         roles: ['admin'],
       },

@@ -21,6 +21,7 @@
     type NewsParam,
     listNewsPage,
     listNewsCategory,
+    deleteNews,
   } from '@/api/news';
 
   const dataTableRef = ref(ElTable);
@@ -101,14 +102,14 @@
   }
 
   function handleDelete(row: any) {
-    const ids = row.id || state.ids.join(',');
+    const id = row.id || state.ids.join(',');
     ElMessageBox.confirm('是否确认删除选中的数据项?', '警告', {
       confirmButtonText: '确定',
       cancelButtonText: '取消',
       type: 'warning',
     })
       .then(() => {
-        return deleteGoods(ids);
+        return deleteNews(id);
       })
       .then(() => {
         ElMessage.success('删除成功');
@@ -137,6 +138,37 @@
     });
     handleQuery();
   });
+
+  function sortBrowse({
+    column,
+    prop,
+    order,
+  }: {
+    column: string;
+    prop: string;
+    order: string;
+  }) {
+    const ascSign = 'ascending';
+    const descSign = 'descending';
+    queryParams.value.browseOrder = undefined;
+    queryParams.value.favorOrder = undefined;
+    queryParams.value.collectOrder = undefined;
+    if (prop === 'browseCount') {
+      if (order === ascSign) queryParams.value.browseOrder = 'asc';
+      else if (order === descSign) queryParams.value.browseOrder = 'desc';
+    } else if (prop === 'favorCount') {
+      if (order === ascSign) queryParams.value.favorOrder = 'asc';
+      else if (order === descSign) queryParams.value.favorOrder = 'desc';
+    } else if (prop === 'collectCount') {
+      if (order === ascSign) queryParams.value.collectOrder = 'asc';
+      else if (order === descSign) queryParams.value.collectOrder = 'desc';
+    }
+
+    handleQuery();
+    console.log(queryParams.value);
+
+    console.log(column, prop, order);
+  }
 </script>
 
 <!-- setup 无法设置组件名称，组件名称keepAlive必须 -->
@@ -150,7 +182,7 @@
   <div class="container">
     <Breadcrumb :items="['menu.news', 'menu.news.list']" />
     <div class="bg-white rounded-2xl p4">
-      <el-form ref="queryForm" class="mt-4" :inline="true">
+      <el-form class="mt-4" :inline="true">
         <el-form-item>
           <el-input
             v-model="queryParams.title"
@@ -195,10 +227,16 @@
         border
         @selection-change="handleSelectionChange"
         @row-click="handleRowClick"
+        @sort-change="sortBrowse"
       >
         <el-table-column type="selection" min-width="5%" center />
         <el-table-column label="新闻标题" prop="newsTitle" min-width="140" />
-        <el-table-column label="新闻类别" prop="newsType" min-width="100">
+        <el-table-column
+          label="新闻类别"
+          prop="newsType"
+          min-width="100"
+          sortable
+        >
           <template #default="scope">
             {{ scope.row.newsType }}
           </template>
@@ -206,6 +244,36 @@
         <el-table-column align="center" label="作者" prop="author">
           <template #default="scope">
             {{ scope.row.author }}
+          </template>
+        </el-table-column>
+        <el-table-column
+          align="center"
+          label="浏览数"
+          sortable="custom"
+          prop="browseCount"
+        >
+          <template #default="scope">
+            {{ scope.row.browseCount }}
+          </template>
+        </el-table-column>
+        <el-table-column
+          align="center"
+          label="喜欢数"
+          prop="favorCount"
+          sortable="custom"
+        >
+          <template #default="scope">
+            {{ scope.row.favorCount }}
+          </template>
+        </el-table-column>
+        <el-table-column
+          align="center"
+          label="收藏数"
+          prop="collectCount"
+          sortable="custom"
+        >
+          <template #default="scope">
+            {{ scope.row.collectCount }}
           </template>
         </el-table-column>
 

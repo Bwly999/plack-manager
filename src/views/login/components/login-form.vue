@@ -1,5 +1,5 @@
 <template>
-  <div p4 bg-gray="50" rounded>
+  <div p4 bg-gray="50" rounded text-2xl>
     <div v-show="!isRegister" class="login-form-wrapper">
       <div class="login-form-title">{{ $t('login.form.title') }}</div>
       <div class="login-form-sub-title">{{ $t('login.form.title') }}</div>
@@ -55,19 +55,19 @@
             >
               {{ $t('login.form.rememberPassword') }}
             </a-checkbox>
-            <a-link>{{ $t('login.form.forgetPassword') }}</a-link>
+            <!-- <a-link>{{ $t('login.form.forgetPassword') }}</a-link> -->
           </div>
           <a-button type="primary" html-type="submit" long :loading="loading">
             {{ $t('login.form.login') }}
           </a-button>
-          <a-button
+          <!-- <a-button
             type="text"
             long
             class="login-form-register-btn"
             @click="isRegister = true"
           >
             {{ $t('login.form.register') }}
-          </a-button>
+          </a-button> -->
         </a-space>
       </a-form>
     </div>

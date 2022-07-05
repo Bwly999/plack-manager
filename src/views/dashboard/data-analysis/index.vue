@@ -18,12 +18,13 @@
             <a-grid-item
               :span="{ xs: 24, sm: 24, md: 24, lg: 24, xl: 8, xxl: 8 }"
             >
-              <PopularAuthor />
+              <UserActions style="margin-bottom: 16px" chart-type="bar" />
+              <UserActions chart-type="pie" />
             </a-grid-item>
           </a-grid>
         </div>
         <div>
-          <ContentPeriodAnalysis />
+          <ContentPublishingSource />
         </div>
       </a-space>
     </a-space>
@@ -35,6 +36,8 @@
   import ContentPeriodAnalysis from './components/content-period-analysis.vue';
   import ContentPublishRatio from './components/content-publish-ratio.vue';
   import PopularAuthor from './components/popular-author.vue';
+  import ContentPublishingSource from './components/content-publishing-source.vue';
+  import UserActions from './components/user-actions.vue';
 </script>
 
 <script lang="ts">

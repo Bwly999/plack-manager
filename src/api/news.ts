@@ -12,12 +12,15 @@ export interface News {
 }
 export type PartialNews = Partial<News>;
 
+type NewsOrder = 'asc' | 'desc';
 export interface NewsParam {
   title?: string;
   type?: string;
   author?: string;
   content?: string;
-
+  browseOrder?: NewsOrder;
+  favorOrder?: NewsOrder;
+  collectOrder?: NewsOrder;
   page: number;
   pageSize: number;
 }
@@ -28,6 +31,9 @@ export function createNews(news: PartialNews) {
 
 export function updateNews(id: number, news: PartialNews) {
   return axios.put<any>(`/news/${id}`, news);
+}
+export function deleteNews(id: number) {
+  return axios.delete<any>(`/news/${id}`);
 }
 
 export function getNewsById(id: string) {

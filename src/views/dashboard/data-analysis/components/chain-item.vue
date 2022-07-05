@@ -44,7 +44,11 @@
     PublicOpinionAnalysisRes,
   } from '@/api/visualization';
   import useChartOption from '@/hooks/chart-option';
-  import { getUserSummary, UserSummaryParam } from '@/api/statistics';
+  import {
+    getUserSummary,
+    getUserVisitProportion,
+    UserSummaryParam,
+  } from '@/api/statistics';
 
   const barChartOptionsFactory = () => {
     const xData = ref<any[]>([]);
@@ -137,18 +141,18 @@
       return {
         grid: {
           left: 0,
-          right: 0,
+          // right: 0,
           top: 0,
-          bottom: 0,
+          // bottom: 0,
         },
         legend: {
-          show: true,
-          top: 'center',
-          right: '0',
+          show: false,
+          top: 'auto',
+          right: '-10',
           orient: 'vertical',
           icon: 'circle',
-          itemWidth: 6,
-          itemHeight: 6,
+          itemWidth: 3,
+          itemHeight: 3,
           textStyle: {
             color: '#4E5969',
           },
@@ -218,45 +222,24 @@
     chartData: [],
   });
   const chartOption = ref({});
-  const fetchData1 = async (params: PublicOpinionAnalysis) => {
-    try {
-      const { data } = await queryPublicOpinionAnalysis(params);
-      renderData.value = data;
-      const { chartData } = data;
-      if (props.chartType === 'bar') {
-        chartData.forEach((el, idx) => {
-          barData.value.push({
-            value: el.y,
-            itemStyle: {
-              color: idx % 2 ? '#2CAB40' : '#86DF6C',
-            },
-          });
-        });
-        chartOption.value = barChartOption.value;
-      } else if (props.chartType === 'line') {
-        chartData.forEach((el) => {
-          if (el.name === '2021') {
-            lineData.value[0].push(el.y);
-          } else {
-            lineData.value[1].push(el.y);
-          }
-        });
-        chartOption.value = lineChartOption.value;
-      } else {
-        chartData.forEach((el) => {
-          pieData.value.push(el);
-        });
-        chartOption.value = pieChartOption.value;
-      }
-    } catch (err) {
-      // you can report use errorHandler or other
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const fetchData = async (params: UserSummaryParam) => {
     try {
+      if (props.quota === '浏览比例') {
+        const { data } = await getUserVisitProportion({
+          n: params.n,
+          type: '浏览',
+        });
+        data.forEach((el) => {
+          pieData.value.push({
+            name: el.name,
+            value: el.count,
+          });
+        });
+        chartOption.value = pieChartOption.value;
+        return;
+      }
+
       const { data } = await getUserSummary(params);
       const count = data
         .map((x) => x.count)
@@ -283,18 +266,11 @@
         });
         chartOption.value = barChartOption.value;
       } else if (props.chartType === 'line') {
-        data.forEach((el, idx) => {
-          // if (lineData.value)
+        data.forEach((el) => {
           lineXData.value.push(el.date);
-          // lineData.value[idx].push(el.count);
           lineData.value[0].push(el.count);
         });
         chartOption.value = lineChartOption.value;
-      } else {
-        // chartData.forEach((el) => {
-        //   pieData.value.push(el);
-        // });
-        // chartOption.value = pieChartOption.value;
       }
     } catch (err) {
       // you can report use errorHandler or other

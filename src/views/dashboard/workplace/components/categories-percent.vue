@@ -18,15 +18,25 @@
 <script lang="ts" setup>
   import useLoading from '@/hooks/loading';
   import useChartOption from '@/hooks/chart-option';
+  import { ref } from 'vue';
+  import { getNewsTypeCount } from '@/api/statistics';
+  import { count } from 'console';
 
   const { loading } = useLoading();
+  const chartData = ref<
+    {
+      name?: string;
+      value?: number;
+    }[]
+  >([]);
+  const newsCount = ref(0);
   const { chartOption } = useChartOption((isDark) => {
     // echarts support https://echarts.apache.org/zh/theme-builder.html
     // It's not used here
     return {
       legend: {
         left: 'center',
-        data: ['纯文本', '图文类', '视频类'],
+        // data: ['纯文本', '图文类', '视频类'],
         bottom: 0,
         icon: 'circle',
         itemWidth: 8,
@@ -59,7 +69,7 @@
             left: 'center',
             top: '50%',
             style: {
-              text: '928,531',
+              text: newsCount.value,
               textAlign: 'center',
               fill: isDark ? '#ffffffb3' : '#1D2129',
               fontSize: 16,
@@ -82,33 +92,46 @@
             borderColor: isDark ? '#232324' : '#fff',
             borderWidth: 1,
           },
-          data: [
-            {
-              value: [148564],
-              name: '纯文本',
-              itemStyle: {
-                color: isDark ? '#3D72F6' : '#249EFF',
-              },
-            },
-            {
-              value: [334271],
-              name: '图文类',
-              itemStyle: {
-                color: isDark ? '#A079DC' : '#313CA9',
-              },
-            },
-            {
-              value: [445694],
-              name: '视频类',
-              itemStyle: {
-                color: isDark ? '#6CAAF5' : '#21CCFF',
-              },
-            },
-          ],
+          data: chartData.value,
+          // data: [
+          //   {
+          //     value: [148564],
+          //     name: '纯文本',
+          //     itemStyle: {
+          //       color: isDark ? '#3D72F6' : '#249EFF',
+          //     },
+          //   },
+          //   {
+          //     value: [334271],
+          //     name: '图文类',
+          //     itemStyle: {
+          //       color: isDark ? '#A079DC' : '#313CA9',
+          //     },
+          //   },
+          //   {
+          //     value: [445694],
+          //     name: '视频类',
+          //     itemStyle: {
+          //       color: isDark ? '#6CAAF5' : '#21CCFF',
+          //     },
+          //   },
+          // ],
         },
       ],
     };
   });
+
+  const fetchData = async () => {
+    const { data } = await getNewsTypeCount({});
+    newsCount.value = data.reduce((prev, x) => prev + x.count, 0);
+    data.forEach((el) => {
+      chartData.value.push({
+        name: el.newsType,
+        value: el.count,
+      });
+    });
+  };
+  fetchData();
 </script>
 
 <style scoped lang="less"></style>

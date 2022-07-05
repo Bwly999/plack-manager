@@ -8,9 +8,6 @@
       }"
       :title="$t('workplace.contentData')"
     >
-      <template #extra>
-        <a-link>{{ $t('workplace.viewMore') }}</a-link>
-      </template>
       <Chart height="289px" :option="chartOption" />
     </a-card>
   </a-spin>
@@ -24,6 +21,7 @@
   import useChartOption from '@/hooks/chart-option';
   import { ToolTipFormatterParams } from '@/types/echarts';
   import { AnyObject } from '@/types/global';
+  import { getNewsAddition } from '@/api/statistics';
 
   function graphicFactory(side: AnyObject) {
     return {
@@ -96,12 +94,12 @@
         axisLine: {
           show: false,
         },
-        axisLabel: {
-          formatter(value: any, idx: number) {
-            if (idx === 0) return value;
-            return `${value}k`;
-          },
-        },
+        // axisLabel: {
+        //   formatter(value: any, idx: number) {
+        //     if (idx === 0) return value;
+        //     return `${value}k`;
+        //   },
+        // },
         splitLine: {
           show: true,
           lineStyle: {
@@ -116,8 +114,8 @@
           const [firstElement] = params as ToolTipFormatterParams[];
           return `<div>
             <p class="tooltip-title">${firstElement.axisValueLabel}</p>
-            <div class="content-panel"><span>总内容量</span><span class="tooltip-value">${(
-              Number(firstElement.value) * 10000
+            <div class="content-panel"><span>新增新闻数</span><span class="tooltip-value">${Number(
+              firstElement.value
             ).toLocaleString()}</span></div>
           </div>`;
         },
@@ -177,17 +175,18 @@
   const fetchData = async () => {
     setLoading(true);
     try {
-      const { data: chartData } = await queryContentData();
-      chartData.forEach((el: ContentDataRecord, idx: number) => {
-        xAxis.value.push(el.x);
-        chartsData.value.push(el.y);
+      const { data: chartData } = await getNewsAddition({ n: 7 });
+      chartData.forEach((el, idx: number) => {
+        xAxis.value.push(el.date);
+        chartsData.value.push(el.count);
         if (idx === 0) {
-          graphicElements.value[0].style.text = el.x;
+          graphicElements.value[0].style.text = el.date;
         }
         if (idx === chartData.length - 1) {
-          graphicElements.value[1].style.text = el.x;
+          graphicElements.value[1].style.text = el.date;
         }
       });
+      console.log(chartsData.value);
     } catch (err) {
       // you can report use errorHandler or other
     } finally {
