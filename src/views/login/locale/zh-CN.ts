@@ -1,4 +1,5 @@
 export default {
+  'DataAnalysis': '分析页',
   'login.form.title': '登录 Plack manage',
   'login.form.userName.errMsg': '用户名不能为空',
   'login.form.password.errMsg': '密码不能为空',

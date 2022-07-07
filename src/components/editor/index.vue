@@ -9,7 +9,7 @@
     />
     <!-- 编辑器 -->
     <Editor
-      v-model="defaultHtml"
+      v-model="html"
       :default-config="editorConfig"
       style="height: 500px; overflow-y: hidden"
       :mode="mode"
@@ -20,23 +20,39 @@
 </template>
 
 <script setup lang="ts">
-  import { onBeforeUnmount, shallowRef, reactive, toRefs } from 'vue';
+  import {
+    onBeforeUnmount,
+    shallowRef,
+    reactive,
+    toRefs,
+    watch,
+    computed,
+    onMounted,
+  } from 'vue';
   import { Editor, Toolbar } from '@wangeditor/editor-for-vue';
 
   // API 引用
   import { uploadFile } from '@/api/file';
+  import { IDomEditor } from '@wangeditor/editor';
 
   const props = defineProps({
     modelValue: {
-      type: [String],
+      type: String,
       default: '',
     },
   });
 
   const emit = defineEmits(['update:modelValue']);
 
+  const html = computed({
+    get: () => props.modelValue,
+    set: (value) => {
+      emit('update:modelValue', value);
+    },
+  });
+
   // 编辑器实例，必须用 shallowRef
-  const editorRef = shallowRef();
+  const editorRef = shallowRef<IDomEditor>();
 
   const state = reactive({
     toolbarConfig: {},
@@ -64,8 +80,18 @@
     editorRef.value = editor; // 记录 editor 实例，重要！
   };
 
+  const setHtml = (ht: string) => {
+    // html.value = `<p>${ht}</p>`;
+    setTimeout(() => {
+      // console.log('setHtml', ht);
+      html.value = `<p>${ht}</p>`;
+      // html.value = ht;
+    }, 10);
+  };
+  defineExpose({ setHtml });
+
   function handleChange(editor: any) {
-    emit('update:modelValue', editor.getHtml());
+    // emit('update:modelValue', editor.getHtml());
   }
 
   // 组件销毁时，也及时销毁编辑器

@@ -24,7 +24,7 @@
     newsTitle: undefined,
     newsType: undefined,
     author: undefined,
-    content: undefined,
+    content: '11111111111111',
   });
 
   function onshelf() {

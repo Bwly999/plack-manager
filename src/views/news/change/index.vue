@@ -5,6 +5,7 @@
   import NewsInfo from '../components/news-info.vue';
 
   const newsInfo = ref<PartialNews>({});
+  newsInfo.value.content = '11111111111';
 
   const newsInfoCardRef = ref<InstanceType<typeof NewsInfo>>();
 

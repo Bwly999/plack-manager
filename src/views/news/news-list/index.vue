@@ -277,7 +277,7 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="创建时间" prop="monthSale" min-width="100" />
+        <el-table-column label="创建时间" prop="gmtCreate" min-width="100" />
         <el-table-column label="详情" prop="cotent">
           <template #default="scope">
             <el-button
